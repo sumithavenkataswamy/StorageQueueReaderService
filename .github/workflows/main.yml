@@ -16,7 +16,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-        source-url: https://nuget.pkg.github.com/YOUR_GITHUB_USERNAME/index.json  # 🔹 Replace with your GitHub username
+        source-url: https://nuget.pkg.github.com/sumithavenkataswamy/index.json  # 🔹 Replace with your GitHub username
 
     - name: Restore dependencies
       run: dotnet restore
