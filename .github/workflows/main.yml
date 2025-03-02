@@ -31,4 +31,6 @@ jobs:
       run: dotnet pack --configuration Release --no-build --output ./nupkgs
 
     - name: Push to GitHub Packages
-      run: dotnet nuget push ./nupkgs/*.nupkg --source "github" --api-key ${{ secrets.NUGET_PACKAGE_TOKEN }} --skip-duplicate
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_PACKAGE_TOKEN }}  # ✅ Corrected Here
+      run: dotnet nuget push ./nupkgs/*.nupkg --source "github" --api-key $NUGET_AUTH_TOKEN --skip-duplicate
