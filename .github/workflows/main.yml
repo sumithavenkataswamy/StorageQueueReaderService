@@ -32,5 +32,5 @@ jobs:
 
     - name: Push to GitHub Packages
       env:
-        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # ✅ Set token in env
-      run: dotnet nuget push ./nupkgs/*.nupkg --source "github" --api-key "$NUGET_AUTH_TOKEN" --skip-duplicate
+        GITHUB_TOKEN: ${{ secrets.NUGET_PACKAGE_TOKEN }}  # ✅ Set token in env
+      run: dotnet nuget push ./nupkgs/*.nupkg --source "github" --api-key "$GITHUB_TOKEN" --skip-duplicate
