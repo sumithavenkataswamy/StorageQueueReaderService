@@ -20,31 +20,41 @@ public class StorageQueueBackgroundService : BackgroundService
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("StorageQueueBackgroundService is starting.");
-        var queueName = _configuration["QueueName"];
-
-        if (string.IsNullOrWhiteSpace(queueName))
+        try
         {
-            throw new ArgumentNullException(nameof(queueName));
-        }
-        
-        var  queueClient = _queueServiceClient.GetQueueClient(queueName);
+            _logger.LogInformation("StorageQueueBackgroundService is starting.");
+            var queueName = _configuration["QueueName"];
 
-        while(!stoppingToken.IsCancellationRequested)
-        {
-            // get the message
-
-            QueueMessage queueMessage = await queueClient.ReceiveMessageAsync();
-
-            if(queueMessage != null) 
+            if (string.IsNullOrWhiteSpace(queueName))
             {
-                // read message body
-                var messageBody = queueMessage.Body.ToString();
-                _logger.LogInformation($"Message Body: {messageBody}");
+                throw new ArgumentNullException(nameof(queueName));
+            }
+            
+            var  queueClient = _queueServiceClient.GetQueueClient(queueName);
+
+            while(!stoppingToken.IsCancellationRequested)
+            {
+                // get the message
+
+                QueueMessage queueMessage = await queueClient.ReceiveMessageAsync();
+
+                _logger.LogInformation($"Recieved message {queueMessage}");
                 
-                // delete message from the queue
-                await queueClient.DeleteMessageAsync(queueMessage.MessageId, queueMessage.PopReceipt);
+                if(queueMessage != null) 
+                {
+                    // read message body
+                    var messageBody = queueMessage.Body.ToString();
+                    _logger.LogInformation($"Message Body: {messageBody}");
+                    
+                    // delete message from the queue
+                    await queueClient.DeleteMessageAsync(queueMessage.MessageId, queueMessage.PopReceipt);
+                }
             }
         }
+        catch (System.Exception)
+        {
+            throw;
+        }
+        
     }
 }

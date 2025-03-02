@@ -17,6 +17,13 @@ jobs:
       with:
         dotnet-version: 9.0.x
 
+    - name: Extract Version
+      id: version
+      run: |
+        VERSION_BASE=$(grep -oPm1 "(?<=<Version>)[^<]+" **/*.csproj)
+        VERSION_SUFFIX=$(date +'%Y%m%d%H%M')  # Use timestamp as unique suffix
+        echo "PACKAGE_VERSION=$VERSION_BASE-$VERSION_SUFFIX" >> $GITHUB_ENV
+
     - name: Add GitHub Packages Source
       run: dotnet nuget add source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --name "github" --username "${{ github.repository_owner }}" --password "${{ secrets.NUGET_PACKAGE_TOKEN }}" --store-password-in-clear-text
 
@@ -30,7 +37,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal --configuration Release
 
     - name: Pack NuGet Package
-      run: dotnet pack --configuration Release --no-build --output ./nupkgs
+      run: dotnet pack --configuration Release --no-build --output ./nupkgs /p:Version=${{ env.PACKAGE_VERSION }}
 
     - name: Push to GitHub Packages
       run: dotnet nuget push ./nupkgs/*.nupkg --source "github" --api-key "${{ secrets.NUGET_PACKAGE_TOKEN }}" --skip-duplicate
