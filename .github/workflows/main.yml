@@ -16,7 +16,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-        source-url: https://nuget.pkg.github.com/sumithavenkataswamy/index.json
+        source-url: https://nuget.pkg.github.com/YOUR_GITHUB_USERNAME/index.json  # 🔹 Replace with your GitHub username
 
     - name: Restore dependencies
       run: dotnet restore
@@ -31,6 +31,4 @@ jobs:
       run: dotnet pack --configuration Release --no-build --output ./nupkgs
 
     - name: Push to GitHub Packages
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # ✅ Corrected Here
-      run: dotnet nuget push ./nupkgs/*.nupkg --source "github" --api-key "$NUGET_AUTH_TOKEN" --skip-duplicate
+      run: dotnet nuget push ./nupkgs/*.nupkg --source "github" --api-key "${{ secrets.GITHUB_TOKEN }}" --skip-duplicate
