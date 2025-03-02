@@ -20,6 +20,7 @@ public class StorageQueueBackgroundService : BackgroundService
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogInformation("StorageQueueBackgroundService is starting.");
         var queueName = _configuration["QueueName"];
 
         if (string.IsNullOrWhiteSpace(queueName))
