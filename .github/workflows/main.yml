@@ -15,14 +15,18 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: 8.0.x  # Use the latest stable version
 
-    - name: Extract Version
+    - name: Extract Version from .csproj
       id: version
       run: |
-        VERSION_BASE=$(grep -oPm1 "(?<=<Version>)[^<]+" **/*.csproj)
-        VERSION_SUFFIX=$(date +'%Y%m%d%H%M')  # Use timestamp as unique suffix
-        echo "PACKAGE_VERSION=$VERSION_BASE-$VERSION_SUFFIX" >> $GITHUB_ENV
+        VERSION=$(find . -name "*.csproj" -exec grep -oPm1 "(?<=<Version>)[^<]+" {} \;)
+        if [[ -z "$VERSION" ]]; then
+          echo "❌ Version tag not found in .csproj"
+          exit 1
+        fi
+        echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
+        echo "📦 Using Version: $VERSION"
 
     - name: Add GitHub Packages Source
       run: dotnet nuget add source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --name "github" --username "${{ github.repository_owner }}" --password "${{ secrets.NUGET_PACKAGE_TOKEN }}" --store-password-in-clear-text
